@@ -1,0 +1,2 @@
+use the file browser only on the backend, send the file img and name to frontend. React should not access file system.
+
