@@ -1,6 +1,5 @@
 const { app, BrowserWindow, dialog } = require('electron');
 const express = require('express');
-const multer = require('multer');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -14,31 +13,43 @@ const store = new Store({
   configName: 'user-preferences',
   defaults: {
     windowBounds: { width: 800, height: 600 },
-    defaultWallpaper: ''
+    defaultWallpaper: '',
+    wallpapers: []
   }
 });
-
-// multer handles file uploads - remove or use to show images on frontend
-/*
-var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'public');
-  },
-  filename: function(req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-var upload = multer({ storage: storage }).single('file');
-*/
 
 var api = express();
 api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 api.use(cors());
 
+// data format
+/**
+ * user-preferences
+ *   windowBounds
+ *     width: NUMBER
+ *     height: NUMBER
+ *   defaultWallpaper: STRING
+ *   wallpapers [{ filter: {from: TIME, to: TIME, weather: STRING}, path: STRING }, ...]
+ */
+
 api.get('/data', (req, res) => {
-  // send all data
+  res.json({
+    defaultWallpaper: store.get('defaultWallpaper'),
+    wallpapers: store.get('wallpapers')
+  });
+});
+
+api.get('/data/default', (req, res) => {
+  res.send(path.basename(store.get('defaultWallpaper')));
+});
+
+api.get('/data/wallpapers', (req, res) => {
+  const wallpapers = store.get('wallpapers').map(elem => {
+    elem.path = path.basename(elem.path);
+    return elem;
+  });
+  res.json(wallpapers);
 });
 
 api.post('/file', (req, res) => {
@@ -60,6 +71,25 @@ api.post('/file', (req, res) => {
   })
 });
 
+api.post('/apply', (req, res) => {
+  const applyChanges = new Promise((resolve, reject) => {
+    for (let i = 0; i < changes.length; i++) {
+      // eslint-disable-next-line no-loop-func
+      copyFileToAppData(changes[i].filePath, newPath => {
+        if (changes[i].setDefault) {
+          store.set('defaultWallpaper', newPath);
+        } else {
+          // idk filter stuff
+        }
+      });
+      if (i === changes.length) { resolve(); }
+    }
+  });
+  applyChanges.then(() => changes = []);
+});
+
+api.listen(PORT, () => console.log(`listenting on port ${PORT}`));
+
 /*
 api.post('/upload', (req, res) => {
   upload(req, res, err => {
@@ -77,25 +107,6 @@ api.post('/upload', (req, res) => {
     })();
   });
 });*/
-
-api.post('/apply', (req, res) => {
-  const applyChanges = new Promise((resolve, reject) => {
-    for (let i = 0; i < changes.length; i++) {
-      // eslint-disable-next-line no-loop-func
-      copyFileToAppData(changes[i].filePath, newPath => {
-        if (changes[i].setDefault) {
-          store.set('defaultWallpaper', newPath);
-        } else {
-          // idk filter stuff
-        }
-      });
-      if (i === changes.length) { resolve() }
-    }
-  });
-  applyChanges.then(() => changes = []);
-});
-
-api.listen(PORT, () => console.log(`listenting on port ${PORT}`));
 
 
 

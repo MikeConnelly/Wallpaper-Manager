@@ -1,6 +1,7 @@
 const electron = require('electron');
 const path = require('path');
 const fs = require('fs');
+const IMGDIR = '/images';
 
 class Store {
   constructor (opts) {
@@ -30,7 +31,13 @@ function parseDataFile(filePath, defaults) {
 function copyFileToAppData(filePath, cb) {
   const filename = path.basename(filePath);
   const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-  const newFile = path.join(userDataPath, filename);
+  const imgDirPath = path.join(userDataPath, IMGDIR);
+  const newFile = path.join(imgDirPath, filename);
+
+  if (!fs.existsSync(imgDirPath)) {
+    fs.mkdirSync(imgDirPath);
+  }
+
   fs.copyFile(filePath, newFile, err => {
     if (err) throw err;
     cb(newFile);

@@ -1,5 +1,3 @@
-use the file browser only on the backend, send the file img and name to frontend. React should not access file system.
-
 on startup, frontend needs to grab all current data from backend
 user selects filter for wallpaper (temp, weather, day, etc.)
 react sends choose img request to api with filter data
@@ -9,3 +7,12 @@ user hits apply changes button - react sends post
 api copies files and application data to app_data
 
 look into background processes for actually updating the wallpaper
+
+filters: need to create, edit(need unique id), delete. If no picture, use defalut
+need default before anything works
+how to do filters:
+    add button to open a new filter menu and file button
+    add button should send a post request to create a new wallpapers entry
+        with a unique id, default filter, empty wallpaper path
+
+get rid of changes?
