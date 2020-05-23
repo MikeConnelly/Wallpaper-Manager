@@ -1,7 +1,24 @@
 const electron = require('electron');
 const path = require('path');
 const fs = require('fs');
+
 const IMGDIR = '/images';
+const BLANK_FILTER_OBJECT = {
+  time: {
+    from: '',
+    to: ''
+  }
+};
+
+// data format
+/**
+ * user-preferences
+ *   windowBounds
+ *     width: NUMBER
+ *     height: NUMBER
+ *   defaultWallpaper: STRING
+ *   wallpapers [{ id: NUMBER, filter: { from: STRING, to: STRING }, path: STRING }, ...]
+ */
 
 class Store {
   constructor (opts) {
@@ -16,6 +33,65 @@ class Store {
 
   set(key, val) {
     this.data[key] = val;
+    fs.writeFileSync(this.path, JSON.stringify(this.data));
+  }
+
+  // the non-default will all be blank so the else statement here may be unnecessary
+  addWallpaper(wallpaper) {
+    copyFileToAppData(wallpaper.filePath, newPath => {
+      if (wallpaper.setDefault) {
+        this.set('defaultWallpaper', newPath);
+      } else {
+        if (!this.data['wallpapers']) {
+          this.data.wallpapers = [];
+        }
+        this.data.wallpapers.push({
+          id: wallpaper.id,
+          filter: wallpaper.filters,
+          path: newPath
+        });
+        fs.writeFileSync(this.path, JSON.stringify(this.data));
+      }
+    });
+  }
+
+  createBlank(cb) {
+    const newID = this.getMaxID() + 1;
+    this.data.wallpapers.push({
+      id: newID,
+      filter: BLANK_FILTER_OBJECT,
+      path: ''
+    });
+    fs.writeFileSync(this.path, JSON.stringify(this.data));
+    cb(newID, BLANK_FILTER_OBJECT);
+  }
+
+  getMaxID() {
+    if (!this.data['wallpapers']) {
+      this.data.wallpapers = [];
+    }
+    return this.data.wallpapers.length > 0 ? this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) : -1;
+  }
+
+  updateFile(id, filePath) {
+    copyFileToAppData(filePath, newPath => {
+      const index = this.data.wallpapers.findIndex(w => w.id === id);
+      if (index === -1) {
+        throw new Error('id does not exist');
+      }
+      this.data.wallpapers[index].path = newPath;
+      fs.writeFileSync(this.path, JSON.stringify(this.data));
+    });
+  }
+
+  updateFilter(id, newFilter) {
+    const index = this.data.wallpapers.findIndex(w => {
+      return w.id === id
+    });
+    if (index === -1) {
+      throw new Error('id does not exist');
+    }
+    this.data.wallpapers[index].filter = newFilter;
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 }
@@ -44,7 +120,4 @@ function copyFileToAppData(filePath, cb) {
   });
 }
 
-module.exports = {
-  Store,
-  copyFileToAppData
-};
+module.exports = Store;

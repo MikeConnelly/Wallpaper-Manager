@@ -3,11 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { Store, copyFileToAppData } = require('./store');
+const Store = require('./store');
 const wallpaper = require('wallpaper');
 const PORT = 8000;
-
-let changes = [];
 
 const store = new Store({
   configName: 'user-preferences',
@@ -22,16 +20,6 @@ var api = express();
 api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 api.use(cors());
-
-// data format
-/**
- * user-preferences
- *   windowBounds
- *     width: NUMBER
- *     height: NUMBER
- *   defaultWallpaper: STRING
- *   wallpapers [{ filter: {from: TIME, to: TIME, weather: STRING}, path: STRING }, ...]
- */
 
 api.get('/data', (req, res) => {
   res.json({
@@ -52,40 +40,65 @@ api.get('/data/wallpapers', (req, res) => {
   res.json(wallpapers);
 });
 
+api.get('/nextid', (req, res) => {
+  const id = store.getMaxID() + 1;
+  res.status(200).send(`${id}`);
+});
+
+// req.body has filters, setDefault, and optional id - used when setDefault=false
 api.post('/file', (req, res) => {
   dialog.showOpenDialog({
     properties: ['openFile'],
     filters: { name: 'Images', extension: ['jpg', 'png'] }
-  }).then(data => {
-    const change = {
-      filePath: data.filePaths[0],
-      fileName: path.basename(data.filePaths[0]),
-      filters: req.body.filters,
-      setDefault: req.body.setDefault,
-      canceled: data.canceled
-    };
-    changes.push(change);
-    res.status(200).send(change.fileName);
+  }).then(fileData => {
+    if (!fileData.canceled) {
+      const data = {
+        filePath: fileData.filePaths[0],
+        filters: req.body.filters,
+        setDefault: req.body.setDefault
+      };
+      if (!data.setDefault) { data.id = req.body.id; }
+
+      store.addWallpaper(data);
+      res.status(200).send(path.basename(fileData.filePaths[0]));
+    }
   }).catch(err => {
     if (err) throw err;
   })
 });
 
-api.post('/apply', (req, res) => {
-  const applyChanges = new Promise((resolve, reject) => {
-    for (let i = 0; i < changes.length; i++) {
-      // eslint-disable-next-line no-loop-func
-      copyFileToAppData(changes[i].filePath, newPath => {
-        if (changes[i].setDefault) {
-          store.set('defaultWallpaper', newPath);
-        } else {
-          // idk filter stuff
-        }
-      });
-      if (i === changes.length) { resolve(); }
-    }
+// craete blank filtered wallpaper and send a new id and blankobject in response
+api.post('/createblank', (req, res) => {
+  store.createBlank((id, BLANK_FILTER) => {
+    res.status(200).json({
+      id: id,
+      filter: BLANK_FILTER
+    });
   });
-  applyChanges.then(() => changes = []);
+});
+
+api.put('/file/:id', (req, res) => {
+  dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: { name: 'Images', extension: ['jpg', 'png'] }
+  }).then(fileData => {
+    if (!fileData.canceled) {
+      const id = parseInt(req.params.id);
+      store.updateFile(id, fileData.filePaths[0]);
+      res.status(200).send(path.basename(fileData.filePaths[0]));
+    }
+  }).catch(err => {
+    if (err) throw err;
+  })
+});
+
+api.put('/filter/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    store.updateFilter(id, req.body);
+  } catch {
+    res.status(400).send('id does not exist');
+  }
 });
 
 api.listen(PORT, () => console.log(`listenting on port ${PORT}`));

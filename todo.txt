@@ -16,3 +16,21 @@ how to do filters:
         with a unique id, default filter, empty wallpaper path
 
 get rid of changes?
+
+
+
+have priority field to sort by
+filter options:
+    time of day:
+        from
+        to
+    day of week
+    weather:
+        rainy
+        sunny
+        snowy
+        stormy
+
+
+
+will run into errors when copying same file twice into appdata - not deleting when changing

@@ -9,6 +9,7 @@ class DefaultWallpaper extends Component {
     this.state = {
       defaultWallpaper: ''
     };
+    this.chooseFileHandler = this.chooseFileHandler.bind(this);
   }
 
   componentDidMount() {
@@ -17,11 +18,20 @@ class DefaultWallpaper extends Component {
     });
   }
 
+  chooseFileHandler() {
+    axios.post("http://localhost:8000/file", {
+      setDefault: true,
+      filters: {}
+    }).then(res => {
+        this.setState({ defaultWallpaper: res.data });
+      });
+  }
+
   render() {
     return (
       <div id="default-wallpaper">
         <h2>default wallpaper</h2>
-        <FileUploader setDefault={true} value={this.state.defaultWallpaper} />
+        <FileUploader value={this.state.defaultWallpaper} chooseFileHandler={this.chooseFileHandler} />
       </div>
     );
   }
