@@ -21,3 +21,5 @@ filter options:
 will run into errors when copying same file twice into appdata - not deleting when changing
 
 clearing time makes it null instead of empty string, probably a problem
+
+change /file post route to an only default route

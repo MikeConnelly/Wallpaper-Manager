@@ -36,7 +36,36 @@ class Store {
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 
-  // the non-default will all be blank so the else statement here may be unnecessary
+  getMaxID() {
+    if (!this.data['wallpapers']) {
+      this.data.wallpapers = [];
+    }
+    return this.data.wallpapers.length > 0 ? this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) : -1;
+  }
+
+  findWallpaperIndexByID(id) {
+    // find wallpaper with id
+    const index = this.data.wallpapers.findIndex(w => {
+      return w.id === id
+    });
+    //throw error if id not found
+    if (index === -1) {
+      throw new Error('id does not exist');
+    }
+    return index;
+  }
+
+  addDefaultWallpaper(filePath) {
+    // delete old default wallpaper from images
+    if (this.data['defaultWallpaper']) {
+      fs.unlinkSync(this.data['defaultWallpaper']);
+    }
+    copyFileToAppData(filePath, newPath => {
+      this.set('defaultWallpaper', newPath);
+    });
+  }
+
+  /*
   addWallpaper(wallpaper) {
     copyFileToAppData(wallpaper.filePath, newPath => {
       if (wallpaper.setDefault) {
@@ -53,7 +82,7 @@ class Store {
         fs.writeFileSync(this.path, JSON.stringify(this.data));
       }
     });
-  }
+  }*/
 
   createBlank(cb) {
     const newID = this.getMaxID() + 1;
@@ -66,31 +95,21 @@ class Store {
     cb(newID, BLANK_FILTER_OBJECT);
   }
 
-  getMaxID() {
-    if (!this.data['wallpapers']) {
-      this.data.wallpapers = [];
-    }
-    return this.data.wallpapers.length > 0 ? this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) : -1;
-  }
-
   updateFile(id, filePath) {
     copyFileToAppData(filePath, newPath => {
-      const index = this.data.wallpapers.findIndex(w => w.id === id);
-      if (index === -1) {
-        throw new Error('id does not exist');
+      const index = this.findWallpaperIndexByID(id);
+      // delete old wallpaper image if it exists
+      if (this.data.wallpapers[index].path) {
+        fs.unlinkSync(this.data.wallpapers[index].path);
       }
+      // write new wallpaper path
       this.data.wallpapers[index].path = newPath;
       fs.writeFileSync(this.path, JSON.stringify(this.data));
     });
   }
 
   updateFilter(id, newFilter) {
-    const index = this.data.wallpapers.findIndex(w => {
-      return w.id === id
-    });
-    if (index === -1) {
-      throw new Error('id does not exist');
-    }
+    const index = this.findWallpaperIndexByID(id);
     this.data.wallpapers[index].filter = newFilter;
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }

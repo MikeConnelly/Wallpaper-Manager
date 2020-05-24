@@ -23,6 +23,7 @@ class FilteredWallpaperCreator extends Component {
   }
 
   changeTimeHandler(value, fromBool) {
+    if (!value) { value = ''; }
     const newFilter = this.props.filter;
     if (fromBool) {
       this.setState({ fromTime: value });

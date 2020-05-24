@@ -46,7 +46,7 @@ api.get('/nextid', (req, res) => {
 });
 
 // req.body has filters, setDefault, and optional id - used when setDefault=false
-api.post('/file', (req, res) => {
+/*api.post('/file', (req, res) => {
   dialog.showOpenDialog({
     properties: ['openFile'],
     filters: { name: 'Images', extension: ['jpg', 'png'] }
@@ -61,6 +61,21 @@ api.post('/file', (req, res) => {
 
       store.addWallpaper(data);
       res.status(200).send(path.basename(fileData.filePaths[0]));
+    }
+  }).catch(err => {
+    if (err) throw err;
+  })
+});*/
+
+api.post('/default', (req, res) => {
+  dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: { name: 'Images', extension: ['jpg', 'png'] }
+  }).then(fileData => {
+    if (!fileData.canceled) {
+      const filePath = fileData.filePaths[0];
+      store.addDefaultWallpaper(filePath);
+      res.status(200).send(path.basename(filePath));
     }
   }).catch(err => {
     if (err) throw err;
@@ -121,11 +136,10 @@ api.post('/upload', (req, res) => {
   });
 });*/
 
-
+let tray = null;
 function createWindow() {
   let { width, height } = store.get('windowBounds');
   let win = new BrowserWindow({ width, height });
-  
   
   var contextMenu = Menu.buildFromTemplate([
     { label: 'Show App', click: function () {
@@ -139,8 +153,12 @@ function createWindow() {
     }
   ]);
 
-  var appIcon = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
-  appIcon.setContextMenu(contextMenu);
+  if (app.isPackaged) {
+    tray = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
+  } else {
+    tray = new Tray('./public/cropped-icon-16x16.jpg');
+  }
+  tray.setContextMenu(contextMenu);
 
   // need this line to show icon in system tray
   win.on('show', function () {});

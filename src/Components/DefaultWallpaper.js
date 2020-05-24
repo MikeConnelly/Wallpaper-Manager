@@ -19,12 +19,9 @@ class DefaultWallpaper extends Component {
   }
 
   chooseFileHandler() {
-    axios.post("http://localhost:8000/file", {
-      setDefault: true,
-      filters: {}
-    }).then(res => {
-        this.setState({ defaultWallpaper: res.data });
-      });
+    axios.post("http://localhost:8000/default", {}).then(res => {
+      this.setState({ defaultWallpaper: res.data });
+    });
   }
 
   render() {
