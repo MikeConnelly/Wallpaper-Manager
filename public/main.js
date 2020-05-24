@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, Menu, Tray } = require('electron');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -67,7 +67,7 @@ api.post('/file', (req, res) => {
   })
 });
 
-// craete blank filtered wallpaper and send a new id and blankobject in response
+// craete blank filtered wallpaper and send a new id and blank filter in response
 api.post('/createblank', (req, res) => {
   store.createBlank((id, BLANK_FILTER) => {
     res.status(200).json({
@@ -122,18 +122,42 @@ api.post('/upload', (req, res) => {
 });*/
 
 
-
 function createWindow() {
   let { width, height } = store.get('windowBounds');
   let win = new BrowserWindow({ width, height });
   
+  
+  var contextMenu = Menu.buildFromTemplate([
+    { label: 'Show App', click: function () {
+        win.show();
+      }
+    }, {
+      label: 'Quit', click: function () {
+        win.destroy();
+        app.quit();
+      }
+    }
+  ]);
+
+  var appIcon = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
+  appIcon.setContextMenu(contextMenu);
+
+  // need this line to show icon in system tray
+  win.on('show', function () {});
+
   win.on('resize', () => {
     let { width, height } = win.getBounds();
     store.set('windowBounds', { width, height });
   });
+  
+  win.on('close', event => {
+    event.preventDefault();
+    win.hide();
+  });
+
+  win.removeMenu();
 
   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
-  // win.webContents.openDevTools();
 }
 
 app.whenReady().then(createWindow);

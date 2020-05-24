@@ -6,10 +6,10 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <div className="app-body">
         <DefaultWallpaper />
         <FilteredWallpapersContainer />
-      </header>
+      </div>
     </div>
   );
 }
