@@ -42,7 +42,7 @@ class FilteredWallpapersContainer extends Component {
         <button id="create-new" onClick={this.createNewFilteredWallpaper}>Add New</button>
         <div id="filtered-wallpapers">
           {this.state.childList.map(function(input, index) {
-            return input
+            return input;
           })}
         </div>
       </div>

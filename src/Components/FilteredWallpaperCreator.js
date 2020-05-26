@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import TimeFilter from './TimeFilter';
 import FileUpload from './FileUpload';
@@ -42,7 +43,6 @@ class FilteredWallpaperCreator extends Component {
   }
   
   render() {
-    // NOTE FILTER MAY NOT HAVE TIME FIELD????????? OR MAYBE IT WILL FUCK IF I KNOW I HAVE TO MAKE IT
     return (
       <div className="filtered-wallpaper-creator">
         <TimeFilter changeTimeHandler={this.changeTimeHandler} from={this.state.fromTime} to={this.state.toTime} />
@@ -51,5 +51,16 @@ class FilteredWallpaperCreator extends Component {
     );
   }
 }
+
+FilteredWallpaperCreator.propTypes = {
+  id: PropTypes.number,
+  fileName: PropTypes.string,
+  filter: PropTypes.shape({
+    time: PropTypes.shape({
+      from: PropTypes.number,
+      to: PropTypes.number
+    })
+  })
+};
 
 export default FilteredWallpaperCreator;

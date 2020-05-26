@@ -17,7 +17,12 @@ const BLANK_FILTER_OBJECT = {
  *     width: NUMBER
  *     height: NUMBER
  *   defaultWallpaper: STRING
- *   wallpapers [{ id: NUMBER, filter: { from: STRING, to: STRING }, path: STRING }, ...]
+ *   wallpapers [{
+ *     id: NUMBER,
+ *     filter:
+ *       time: { from: STRING, to: STRING },
+ *     path: STRING },
+ *   ...]
  */
 
 class Store {
@@ -64,25 +69,6 @@ class Store {
       this.set('defaultWallpaper', newPath);
     });
   }
-
-  /*
-  addWallpaper(wallpaper) {
-    copyFileToAppData(wallpaper.filePath, newPath => {
-      if (wallpaper.setDefault) {
-        this.set('defaultWallpaper', newPath);
-      } else {
-        if (!this.data['wallpapers']) {
-          this.data.wallpapers = [];
-        }
-        this.data.wallpapers.push({
-          id: wallpaper.id,
-          filter: wallpaper.filters,
-          path: newPath
-        });
-        fs.writeFileSync(this.path, JSON.stringify(this.data));
-      }
-    });
-  }*/
 
   createBlank(cb) {
     const newID = this.getMaxID() + 1;

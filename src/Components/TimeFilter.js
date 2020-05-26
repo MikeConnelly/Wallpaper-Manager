@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import TimePicker from 'react-time-picker';
 
 class TimeFilter extends Component {
@@ -23,5 +24,11 @@ class TimeFilter extends Component {
     );
   }
 }
+
+TimeFilter.propTypes = {
+  changeTimeHandler: PropTypes.func.isRequired,
+  from: PropTypes.string,
+  to: PropTypes.string
+};
 
 export default TimeFilter;

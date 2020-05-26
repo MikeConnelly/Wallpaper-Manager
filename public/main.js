@@ -21,13 +21,6 @@ api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 api.use(cors());
 
-api.get('/data', (req, res) => {
-  res.json({
-    defaultWallpaper: store.get('defaultWallpaper'),
-    wallpapers: store.get('wallpapers')
-  });
-});
-
 api.get('/data/default', (req, res) => {
   res.send(path.basename(store.get('defaultWallpaper')));
 });
@@ -39,33 +32,6 @@ api.get('/data/wallpapers', (req, res) => {
   });
   res.json(wallpapers);
 });
-
-api.get('/nextid', (req, res) => {
-  const id = store.getMaxID() + 1;
-  res.status(200).send(`${id}`);
-});
-
-// req.body has filters, setDefault, and optional id - used when setDefault=false
-/*api.post('/file', (req, res) => {
-  dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: { name: 'Images', extension: ['jpg', 'png'] }
-  }).then(fileData => {
-    if (!fileData.canceled) {
-      const data = {
-        filePath: fileData.filePaths[0],
-        filters: req.body.filters,
-        setDefault: req.body.setDefault
-      };
-      if (!data.setDefault) { data.id = req.body.id; }
-
-      store.addWallpaper(data);
-      res.status(200).send(path.basename(fileData.filePaths[0]));
-    }
-  }).catch(err => {
-    if (err) throw err;
-  })
-});*/
 
 api.post('/default', (req, res) => {
   dialog.showOpenDialog({
@@ -116,7 +82,8 @@ api.put('/filter/:id', (req, res) => {
   }
 });
 
-api.listen(PORT, () => console.log(`listenting on port ${PORT}`));
+// binds to localhost so the routes are not accessable over the network... its an electron app
+api.listen(PORT, 'localhost');
 
 /*
 api.post('/upload', (req, res) => {
@@ -136,7 +103,9 @@ api.post('/upload', (req, res) => {
   });
 });*/
 
+// tray needs to exist in global scope
 let tray = null;
+
 function createWindow() {
   let { width, height } = store.get('windowBounds');
   let win = new BrowserWindow({ width, height });
