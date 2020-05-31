@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const Store = require('./store');
-const wallpaper = require('wallpaper');
+const startUpdateLoop = require('./wallpaper');
 const PORT = 8000;
 
 const store = new Store({
@@ -82,6 +82,12 @@ api.put('/filter/:id', (req, res) => {
   }
 });
 
+api.delete('/wallpaper/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  store.deleteWallpaper(id);
+  res.status(200).send('item deleted');
+});
+
 // binds to localhost so the routes are not accessable over the network... its an electron app
 api.listen(PORT, 'localhost');
 
@@ -110,7 +116,7 @@ function createWindow() {
   let { width, height } = store.get('windowBounds');
   let win = new BrowserWindow({ width, height });
   
-  var contextMenu = Menu.buildFromTemplate([
+  const contextMenu = Menu.buildFromTemplate([
     { label: 'Show App', click: function () {
         win.show();
       }
@@ -121,6 +127,10 @@ function createWindow() {
       }
     }
   ]);
+
+  dialog.showErrorBox = function(title, content) {
+    console.log(`${title}\n${content}`);
+  }
 
   if (app.isPackaged) {
     tray = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
@@ -143,8 +153,9 @@ function createWindow() {
   });
 
   win.removeMenu();
-
   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
+
+  startUpdateLoop(store);
 }
 
 app.whenReady().then(createWindow);

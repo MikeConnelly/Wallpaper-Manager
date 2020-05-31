@@ -6,7 +6,7 @@ api stores img path with filter data in array
 user hits apply changes button - react sends post
 api copies files and application data to app_data
 
-have priority field to sort by
+have priority field to sort by!!!
 filter options:
     time of day:
         from
@@ -18,8 +18,14 @@ filter options:
         snowy
         stormy
 
-will run into errors when copying same file twice into appdata - not deleting when changing
-
-clearing time makes it null instead of empty string, probably a problem
-
-change /file post route to an only default route
+General
+    name
+Frontend
+    icon
+    background color
+    color scheme
+    time-picker 0 minutes bug
+    drag and drop priority
+Backend
+    implement priority or comparison system
+    seperate api and app modules

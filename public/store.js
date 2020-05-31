@@ -26,6 +26,7 @@ const BLANK_FILTER_OBJECT = {
  */
 
 class Store {
+
   constructor (opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
@@ -48,6 +49,14 @@ class Store {
     return this.data.wallpapers.length > 0 ? this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) : -1;
   }
 
+  getDefault() {
+    return this.data.defaultWallpaper;
+  }
+
+  getWallpapers() {
+    return this.data.wallpapers;
+  }
+
   findWallpaperIndexByID(id) {
     // find wallpaper with id
     const index = this.data.wallpapers.findIndex(w => {
@@ -62,8 +71,8 @@ class Store {
 
   addDefaultWallpaper(filePath) {
     // delete old default wallpaper from images
-    if (this.data['defaultWallpaper']) {
-      fs.unlinkSync(this.data['defaultWallpaper']);
+    if (this.data.defaultWallpaper) {
+      fs.unlinkSync(new URL('file:///' + this.data.defaultWallpaper));
     }
     copyFileToAppData(filePath, newPath => {
       this.set('defaultWallpaper', newPath);
@@ -86,7 +95,7 @@ class Store {
       const index = this.findWallpaperIndexByID(id);
       // delete old wallpaper image if it exists
       if (this.data.wallpapers[index].path) {
-        fs.unlinkSync(this.data.wallpapers[index].path);
+        fs.unlinkSync(new URL('file:///' + this.data.wallpapers[index].path));
       }
       // write new wallpaper path
       this.data.wallpapers[index].path = newPath;
@@ -97,6 +106,12 @@ class Store {
   updateFilter(id, newFilter) {
     const index = this.findWallpaperIndexByID(id);
     this.data.wallpapers[index].filter = newFilter;
+    fs.writeFileSync(this.path, JSON.stringify(this.data));
+  }
+
+  deleteWallpaper(id) {
+    const index = this.findWallpaperIndexByID(id);
+    this.data.wallpapers.splice(index, 1);
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 }
