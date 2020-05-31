@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { Draggable } from 'react-beautiful-dnd';
 import TimeFilter from './TimeFilter';
 import FileUpload from './FileUpload';
 
@@ -44,23 +45,35 @@ class FilteredWallpaperCreator extends Component {
   
   render() {
     return (
-      <div className="filtered-wallpaper-creator">
-        <TimeFilter changeTimeHandler={this.changeTimeHandler} from={this.state.fromTime} to={this.state.toTime} />
-        <FileUpload value={this.state.fileName} chooseFileHandler={this.chooseFileHandler} />
-      </div>
+      <Draggable draggableId={`${this.state.id}`} index={this.props.index}>
+        {provided => (
+          <div
+            className="filtered-wallpaper-creator"
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <TimeFilter changeTimeHandler={this.changeTimeHandler} from={this.state.fromTime} to={this.state.toTime} />
+            <FileUpload value={this.state.fileName} chooseFileHandler={this.chooseFileHandler} />
+            <button className="delete-button" onClick={e => this.props.deleteHandler(this.state.id)}>Delete</button>
+          </div>
+        )}
+      </Draggable>
     );
   }
 }
 
 FilteredWallpaperCreator.propTypes = {
+  index: PropTypes.number,
   id: PropTypes.number,
   fileName: PropTypes.string,
   filter: PropTypes.shape({
     time: PropTypes.shape({
-      from: PropTypes.number,
-      to: PropTypes.number
+      from: PropTypes.string,
+      to: PropTypes.string
     })
-  })
+  }),
+  deleteHandler: PropTypes.func.isRequired
 };
 
 export default FilteredWallpaperCreator;

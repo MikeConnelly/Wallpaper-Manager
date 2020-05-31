@@ -5,10 +5,15 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <div className="app-body">
-        <DefaultWallpaper />
-        <FilteredWallpapersContainer />
+        <div className="col-left">
+          <DefaultWallpaper />
+        </div>
+        <div className="col-right">
+          <h2>Wallpapers</h2>
+          <FilteredWallpapersContainer />
+        </div>
       </div>
     </div>
   );

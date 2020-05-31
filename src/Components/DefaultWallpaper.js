@@ -27,7 +27,7 @@ class DefaultWallpaper extends Component {
   render() {
     return (
       <div id="default-wallpaper">
-        <h2>default wallpaper</h2>
+        <h2>Default Wallpaper</h2>
         <FileUploader value={this.state.defaultWallpaper} chooseFileHandler={this.chooseFileHandler} />
       </div>
     );

@@ -1,25 +1,77 @@
-.App {
+.app {
   text-align: center;
-}
-
-.app-body {
-  background-color: #282c34;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background-color: #00428d;
   color: white;
 }
 
-#filtered-wallpapers {
+.app-body {
   display: flex;
   flex-direction: row;
 }
 
-.filtered-wallpaper-creator {
+.col-left {
+  margin: 30px;
+}
+
+.col-right {
+  margin: 30px;
+}
+
+#default-wallpaper .add-file {
+  padding: 0px 20px 20px 20px;
+  border-radius: 15px;
+  background-color: rgb(0, 115, 223);
+}
+
+#filtered-wallpapers {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filtered-wallpaper-creator {
+  padding: 0px 20px 20px 20px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  background-color: rgb(0, 115, 223);
+}
+/*
+.time-text, .react-time-picker {
+  display: inline-block;
 }
 
 .time-picker {
   margin-bottom: 15px;
+}
+*/
+.time {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+}
+
+.time-col-left, .time-col-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-text {
+  padding: 3px;
+  margin: 15px;
+}
+
+.react-time-picker {
+  margin: 15px;
+}
+
+.add-file .choose-button, .add-file #selected-file-name {
+  display: inline-block;
+}
+
+.add-file .choose-button {
+  margin-right: 7px;
+}
+
+.filtered-wallpaper-creator .delete-button {
+  float: right;
 }

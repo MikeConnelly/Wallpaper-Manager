@@ -6,20 +6,26 @@ class TimeFilter extends Component {
   render() {
     return (
       <div className="time-picker">
-        <p>from</p>
-        <TimePicker
-          value={this.props.from}
-          onChange={value => this.props.changeTimeHandler(value, true)}
-          disableClock={true}
-          format='h:m a'
-        />
-        <p>to</p>
-        <TimePicker
-          value={this.props.to}
-          onChange={value => this.props.changeTimeHandler(value, false)}
-          disableClock={true}
-          format='h:m a'
-        />
+        <div className="time">
+          <div className="time-col-left">
+            <p className="time-text">from</p>
+            <p className="time-text">to</p>
+          </div>
+          <div className="time-col-right">
+            <TimePicker
+              value={this.props.from}
+              onChange={value => this.props.changeTimeHandler(value, true)}
+              disableClock={true}
+              format='h:m a'
+            />
+            <TimePicker
+              value={this.props.to}
+              onChange={value => this.props.changeTimeHandler(value, false)}
+              disableClock={true}
+              format='h:m a'
+            />
+          </div>
+        </div>
       </div>
     );
   }
