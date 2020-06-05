@@ -17,10 +17,12 @@
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
+    "react-dropdown": "^1.7.0",
     "react-scripts": "3.4.1",
     "react-time-picker": "^4.0.1",
     "wallpaper": "^4.4.1",
-    "weather-js": "^2.0.0"
+    "weather-js": "^2.0.0",
+    "winston": "^3.2.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -6,17 +6,11 @@ api stores img path with filter data in array
 user hits apply changes button - react sends post
 api copies files and application data to app_data
 
-have priority field to sort by!!!
 filter options:
     time of day:
         from
         to
-    day of week
     weather:
-        rainy
-        sunny
-        snowy
-        stormy
 
 General
     name
@@ -25,7 +19,20 @@ Frontend
     background color
     color scheme
     time-picker 0 minutes bug
-    drag and drop priority
 Backend
-    implement priority or comparison system
-    seperate api and app modules
+
+
+priority system:
+    priority is always shown and updated by the items position in the list
+        needs to be added in the create api
+        make put api for when items in the list are reordered
+    when getting all items from store, sort in order of priority
+    replace id with priority? Or just use id instead of priority
+        i would have to update ids on frontend???
+        don't actually store priorities, just sort the list???
+
+priority issues with only time high priority being better than both less priority
+
+skycode values: https://stackoverflow.com/questions/12142094/msn-weather-api-list-of-conditions
+
+change sunny to clear (cuz night), adding file resets dropdown?

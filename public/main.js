@@ -3,10 +3,20 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const winston = require('winston');
 const Store = require('./store');
 const startUpdateLoop = require('./wallpaper');
 const setupRoutes = require('./api');
 const PORT = 8000;
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'user-service' },
+  transports: [
+    new winston.transports.File({ filename: 'app.log' })
+  ]
+});
 
 const store = new Store({
   configName: 'user-preferences',
@@ -15,14 +25,13 @@ const store = new Store({
     defaultWallpaper: '',
     wallpapers: []
   }
-});
+}, logger);
 
 var api = express();
 api.use(bodyParser.urlencoded({ extended: true }));
 api.use(bodyParser.json());
 api.use(cors());
-
-setupRoutes(api, store);
+setupRoutes(api, store, logger);
 
 // binds to localhost so the routes are not accessable over the network... its an electron app
 api.listen(PORT, 'localhost');
@@ -31,7 +40,7 @@ let tray = null;
 
 function createWindow() {
   let { width, height } = store.get('windowBounds');
-  let win = new BrowserWindow({ width, height });
+  let win = new BrowserWindow({ width, height, backgroundColor: '#00428d' });
   
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Show App', click: function () {
@@ -39,19 +48,23 @@ function createWindow() {
       }
     }, {
       label: 'Quit', click: function () {
+        logger.log({
+          level: 'info',
+          message: 'app quit'
+        });
+
         win.destroy();
         app.quit();
       }
     }
   ]);
 
-  dialog.showErrorBox = function(title, content) {
-    console.log(`${title}\n${content}`);
-  }
-
-  if (app.isPackaged) {
+  if (app.isPackaged) { // prod
     tray = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
-  } else {
+  } else { // dev
+    logger.add(new winston.transports.Console({
+      format: winston.format.simple()
+    }));
     tray = new Tray('./public/cropped-icon-16x16.jpg');
   }
   tray.setContextMenu(contextMenu);
@@ -72,7 +85,11 @@ function createWindow() {
   win.removeMenu();
   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
 
-  startUpdateLoop(store);
+  logger.log({
+    level: 'info',
+    message: 'app started'
+  })
+  startUpdateLoop(store, logger);
 }
 
 app.whenReady().then(createWindow);
@@ -88,6 +105,10 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+dialog.showErrorBox = function(title, content) {
+  console.log(`${title}\n${content}`);
+}
 
 process.on('SIGINT', () => {
   process.exit();
