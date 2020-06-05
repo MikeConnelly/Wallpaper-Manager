@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Draggable } from 'react-beautiful-dnd';
 import TimeFilter from './TimeFilter';
+import WeatherFilter from './WeatherFilter';
 import FileUpload from './FileUpload';
 
 class FilteredWallpaperCreator extends Component {
@@ -13,11 +14,19 @@ class FilteredWallpaperCreator extends Component {
       id: props.id,
       fileName: props.fileName,
       fromTime: props.filter.time.from,
-      toTime: props.filter.time.to
+      toTime: props.filter.time.to,
+      weather: props.filter.weather
     };
     this.updateFilter = this.updateFilter.bind(this);
     this.changeTimeHandler = this.changeTimeHandler.bind(this);
+    this.changeWeatherHandler = this.changeWeatherHandler.bind(this);
     this.chooseFileHandler = this.chooseFileHandler.bind(this);
+  }
+
+  chooseFileHandler() {
+    axios.put(`http://localhost:8000/file/${this.state.id}`, {}).then(res => {
+      this.setState({ fileName: res.data });
+    });
   }
 
   updateFilter(newFilter) {
@@ -37,10 +46,11 @@ class FilteredWallpaperCreator extends Component {
     this.updateFilter(newFilter);
   }
 
-  chooseFileHandler() {
-    axios.put(`http://localhost:8000/file/${this.state.id}`, {}).then(res => {
-      this.setState({ fileName: res.data });
-    });
+  changeWeatherHandler(newWeather) {
+    if (!newWeather || newWeather === 'None') { newWeather = ''; }
+    const newFilter = this.props.filter;
+    newFilter.weather = newWeather;
+    this.updateFilter(newFilter);
   }
   
   render() {
@@ -54,6 +64,7 @@ class FilteredWallpaperCreator extends Component {
             {...provided.dragHandleProps}
           >
             <TimeFilter changeTimeHandler={this.changeTimeHandler} from={this.state.fromTime} to={this.state.toTime} />
+            <WeatherFilter value={this.state.weather} changeWeatherHandler={this.changeWeatherHandler} />
             <FileUpload value={this.state.fileName} chooseFileHandler={this.chooseFileHandler} />
             <button className="delete-button" onClick={e => this.props.deleteHandler(this.state.id)}>Delete</button>
           </div>
@@ -71,7 +82,8 @@ FilteredWallpaperCreator.propTypes = {
     time: PropTypes.shape({
       from: PropTypes.string,
       to: PropTypes.string
-    })
+    }),
+    weather: PropTypes.string
   }),
   deleteHandler: PropTypes.func.isRequired
 };

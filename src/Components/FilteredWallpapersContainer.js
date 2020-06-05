@@ -11,7 +11,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightBlue" : "blue"
+  background: isDraggingOver ? "lightBlue" : "#00428d"
 });
 
 class FilteredWallpapersContainer extends Component {
@@ -46,6 +46,10 @@ class FilteredWallpapersContainer extends Component {
   deleteWallpaper(id) {
     axios.delete(`http://localhost:8000/wallpaper/${id}`);
     this.removeChild(id);
+  }
+
+  updatePriorities(idList) {
+    axios.put(`http://localhost:8000/priority`, idList);
   }
 
   addChild(id, filter, fileName) {
@@ -85,6 +89,7 @@ class FilteredWallpapersContainer extends Component {
       result.destination.index
     );
 
+    this.updatePriorities(items.map(item => item.id));
     this.setState({
       childList: items
     });
@@ -110,7 +115,7 @@ class FilteredWallpapersContainer extends Component {
                 ))}
               </div>
               <button id="create-new" onClick={this.createNewFilteredWallpaper}>Add New</button>
-            {provided.placeholder}
+              {provided.placeholder}
             </div>
           )}
         </Droppable>
