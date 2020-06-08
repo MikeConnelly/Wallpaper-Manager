@@ -14,25 +14,16 @@ filter options:
 
 General
     name
+    size?
 Frontend
-    icon
-    background color
-    color scheme
-    time-picker 0 minutes bug
+    time-picker 0 minutes visual bug
 Backend
-
-
-priority system:
-    priority is always shown and updated by the items position in the list
-        needs to be added in the create api
-        make put api for when items in the list are reordered
-    when getting all items from store, sort in order of priority
-    replace id with priority? Or just use id instead of priority
-        i would have to update ids on frontend???
-        don't actually store priorities, just sort the list???
+    move files out of public folder
 
 priority issues with only time high priority being better than both less priority
 
 skycode values: https://stackoverflow.com/questions/12142094/msn-weather-api-list-of-conditions
-
 change sunny to clear (cuz night), adding file resets dropdown?
+
+
+if multiple entries have the same wallpaper than deleting one will break the other

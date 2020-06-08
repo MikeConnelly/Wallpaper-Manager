@@ -45,13 +45,6 @@ class Store {
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 
-  getMaxID() {
-    if (!this.data['wallpapers']) {
-      this.data.wallpapers = [];
-    }
-    return this.data.wallpapers.length > 0 ? this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) : -1;
-  }
-
   getDefault() {
     return this.data.defaultWallpaper;
   }
@@ -77,6 +70,7 @@ class Store {
     // if (this.data.defaultWallpaper) {
     //   fs.unlinkSync(new URL('file:///' + this.data.defaultWallpaper));
     // }
+
     copyFileToAppData(filePath, newPath => {
       this.set('defaultWallpaper', newPath);
 
@@ -88,7 +82,7 @@ class Store {
   }
 
   createBlank(cb) {
-    const newID = this.getMaxID() + 1;
+    const newID = this.data.wallpapers.reduce((max, w) => Math.max(max, w.id), -1) + 1;
 
     this.logger.log({
       level: 'info',
@@ -107,11 +101,9 @@ class Store {
   updateFile(id, filePath) {
     copyFileToAppData(filePath, newPath => {
       const index = this.findWallpaperIndexByID(id);
-      // const url = new URL('file:///' + this.data.wallpapers[index].path);
-      // console.log(`${filePath}, ${newPath}, ${url}`);
       // delete old wallpaper image if it exists
       // if (this.data.wallpapers[index].path) {
-      //   fs.unlinkSync(url);
+      //   fs.unlinkSync(new URL('file:///' + this.data.wallpapers[index].path));
       // }
       // write new wallpaper path
       this.data.wallpapers[index].path = newPath;
@@ -153,6 +145,11 @@ class Store {
 
   deleteWallpaper(id) {
     const index = this.findWallpaperIndexByID(id);
+    // delete wallpaper image
+    // if (this.data.wallpapers[index].path) {
+    //   fs.unlinkSync(new URL('file:///' + this.data.wallpapers[index].path));
+    // }
+    // remove entry from data
     this.data.wallpapers.splice(index, 1);
     fs.writeFileSync(this.path, JSON.stringify(this.data));
 

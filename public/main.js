@@ -8,6 +8,7 @@ const Store = require('./store');
 const startUpdateLoop = require('./wallpaper');
 const setupRoutes = require('./api');
 const PORT = 8000;
+const ICOPATH = app.isPackaged ? path.join(__dirname, 'icon.ico') : './public/icon.ico';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -40,10 +41,14 @@ let tray = null;
 
 function createWindow() {
   let { width, height } = store.get('windowBounds');
-  let win = new BrowserWindow({ width, height, backgroundColor: '#00428d' });
+  let win = new BrowserWindow({ width, height,
+    backgroundColor: '#00428d',
+    resizable: false,
+    icon: ICOPATH
+  });
   
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show App', click: function () {
+    { label: 'Open App', click: function () {
         win.show();
       }
     }, {
@@ -59,15 +64,10 @@ function createWindow() {
     }
   ]);
 
-  if (app.isPackaged) { // prod
-    tray = new Tray(path.join(__dirname, 'cropped-icon-16x16.jpg'));
-  } else { // dev
-    logger.add(new winston.transports.Console({
-      format: winston.format.simple()
-    }));
-    tray = new Tray('./public/cropped-icon-16x16.jpg');
-  }
+  tray = new Tray(ICOPATH);
+  tray.setToolTip('wallpaper app');
   tray.setContextMenu(contextMenu);
+  tray.on('click', tray.popUpContextMenu);
 
   // need this line to show icon in system tray
   win.on('show', function () {});
@@ -84,7 +84,12 @@ function createWindow() {
 
   win.removeMenu();
   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
-
+  
+  if (!app.isPackaged) { // prod
+    logger.add(new winston.transports.Console({
+      format: winston.format.simple()
+    }));
+  }
   logger.log({
     level: 'info',
     message: 'app started'
