@@ -5,7 +5,7 @@ import 'react-dropdown/style.css';
 
 const options = [
   'None',
-  'Sunny',
+  'Clear',
   'Rainy',
   'Cloudy',
   'Foggy',

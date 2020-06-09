@@ -223,20 +223,20 @@ function matchWeather(filterWeather, skycode) {
   // 45 => 'chance_of_rain',
   // 46 => 'chance_of_snow',
   // 47 => 'chance_of_tstorm'
-  if ([0,1,2,3,4,17,35,37,38,47].includes(skycode)) {
-    return filterWeather === 'Thunderstorm';
-  } else if ([5,6,7,8,9,10,13,14,15,16,25,41,42,43,46].includes(skycode)) {
-    return filterWeather === 'Snowy';
+  if ([31,32,33,34,36].includes(skycode)) {
+    return filterWeather === 'Clear'
   } else if ([11,12,18,39,40,45].includes(skycode)) {
     return filterWeather === 'Rainy';
-  } else if ([19,20,21,22].includes(skycode)) {
-    return filterWeather === 'Foggy';
   } else if ([26,27,28,29,30].includes(skycode)) {
     return filterWeather === 'Cloudy';
-  } else if ([31,32,33,34,36].includes(skycode)) {
-    return filterWeather === 'Sunny'
+  } else if ([19,20,21,22].includes(skycode)) {
+    return filterWeather === 'Foggy';
   } else if ([23,24].includes(skycode)) {
     return filterWeather === 'Windy';
+  } else if ([5,6,7,8,9,10,13,14,15,16,25,41,42,43,46].includes(skycode)) {
+    return filterWeather === 'Snowy';
+  } else if ([0,1,2,3,4,17,35,37,38,47].includes(skycode)) {
+    return filterWeather === 'Thunderstorm';
   }
   return false;
 }
