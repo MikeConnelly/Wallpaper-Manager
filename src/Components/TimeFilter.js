@@ -1,31 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TimePicker from 'react-time-picker';
+import TextField from '@material-ui/core/TextField';
+// import TimePicker from 'react-time-picker';
+// import TimePicker from 'react-time-picker/dist/entry.nostyle';
 
 class TimeFilter extends Component {
   render() {
     return (
-      <div className="time-picker">
-        <div className="time">
-          <div className="time-col-left">
-            <p className="time-text">from</p>
-            <p className="time-text">to</p>
-          </div>
-          <div className="time-col-right">
-            <TimePicker
-              value={this.props.from}
-              onChange={value => this.props.changeTimeHandler(value, true)}
-              disableClock={true}
-              format='h:m a'
-            />
-            <TimePicker
-              value={this.props.to}
-              onChange={value => this.props.changeTimeHandler(value, false)}
-              disableClock={true}
-              format='h:m a'
-            />
-          </div>
-        </div>
+      <div className="time-filter">
+        <TextField
+          id="from-time"
+          type="time"
+          label="from"
+          defaultValue={this.props.from}
+          InputLabelProps={{shrink: true}}
+          InputProps={{step: 300}}
+          onChange={e => this.props.changeTimeHandler(e.target.value, true)}
+        />
+        <TextField
+          id="to-time"
+          type="time"
+          label="to"
+          defaultValue={this.props.to}
+          InputLabelProps={{shrink: true}}
+          InputProps={{step: 300}}
+          onChange={e => this.props.changeTimeHandler(e.target.value, false)}
+        />
       </div>
     );
   }
@@ -38,3 +38,22 @@ TimeFilter.propTypes = {
 };
 
 export default TimeFilter;
+
+/*
+<TimePicker
+  value={this.props.from}
+  onChange={value => this.props.changeTimeHandler(value, true)}
+  disableClock={true}
+  format='h:m a'
+  hourPlaceholder='hh'
+  minutePlaceholder='mm'
+/>
+<TimePicker
+  value={this.props.to}
+  onChange={value => this.props.changeTimeHandler(value, false)}
+  disableClock={true}
+  format='h:m a'
+  hourPlaceholder='hh'
+  minutePlaceholder='mm'
+/>
+*/

@@ -2,7 +2,7 @@ const wallpaper = require('wallpaper');
 const moment = require('moment');
 const ipInfo = require('ipinfo');
 const weather = require('weather-js');
-const INTERVAL = 30 * 1000;
+const INTERVAL = 5 * 60 * 1000;
 const FORMAT = 'hh:mm';
 let store;
 let logger;
@@ -37,6 +37,10 @@ async function checkForUpdate() {
     message: `checkForUpdate: current: ${currentWallpaper}, next: ${nextWallpaper}`
   });
   if (nextWallpaper && currentWallpaper !== nextWallpaper) {
+    logger.log({
+      level: 'info',
+      message: `setting wallpaper to ${nextWallpaper}`
+    });
     wallpaper.set(nextWallpaper);
   }
 }

@@ -30,17 +30,21 @@ class FilteredWallpaperCreator extends Component {
   }
 
   updateFilter(newFilter) {
-    axios.put(`http://localhost:8000/filter/${this.state.id}`, newFilter);
+    axios.put(`http://localhost:8000/filter/${this.state.id}`, newFilter).then(res => {
+      this.setState({
+        fromTime: newFilter.time.from,
+        toTime: newFilter.time.to,
+        weather: newFilter.weather
+      });
+    });
   }
 
   changeTimeHandler(value, fromBool) {
     if (!value) { value = ''; }
     const newFilter = this.props.filter;
     if (fromBool) {
-      this.setState({ fromTime: value });
       newFilter.time.from = value;
     } else {
-      this.setState({ toTime: value });
       newFilter.time.to = value;
     }
     this.updateFilter(newFilter);

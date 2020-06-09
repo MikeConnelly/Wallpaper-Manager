@@ -13,9 +13,9 @@ filter options:
 
 General
     name
-    size?
+    about button that shows user tour???
 Frontend
-    time-picker 0 minutes visual bug
+    visualize priority
 Backend
     move files out of public folder
 
@@ -23,3 +23,5 @@ priority issues with only time high priority being better than both less priorit
 
 skycode values: https://stackoverflow.com/questions/12142094/msn-weather-api-list-of-conditions
 change sunny to clear (cuz night), adding file resets dropdown?
+
+deleting causes an entry to be null?

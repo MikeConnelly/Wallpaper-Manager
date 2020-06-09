@@ -98,7 +98,7 @@ function routes(api, store, logger) {
       });
 
       store.updateFilter(id, req.body);
-      res.status(200);
+      res.status(200).send('filter updated');
     } catch {
       res.status(400).send('id does not exist');
     }
@@ -114,7 +114,7 @@ function routes(api, store, logger) {
     });
 
     store.updatePriorities(idList);
-    res.status(200);
+    res.status(200).send('priority updated');
   });
 
   // delete wallpaper entry
@@ -127,7 +127,7 @@ function routes(api, store, logger) {
     });
 
     store.deleteWallpaper(id);
-    res.status(200);
+    res.status(200).send('wallpaper deleted');
   });
 }
 

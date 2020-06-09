@@ -9,6 +9,7 @@ const startUpdateLoop = require('./wallpaper');
 const setupRoutes = require('./api');
 const PORT = 8000;
 const ICOPATH = app.isPackaged ? path.join(__dirname, 'icon.ico') : './public/icon.ico';
+let tray;
 
 const logger = winston.createLogger({
   level: 'info',
@@ -36,8 +37,6 @@ setupRoutes(api, store, logger);
 
 // binds to localhost so the routes are not accessable over the network... its an electron app
 api.listen(PORT, 'localhost');
-
-let tray = null;
 
 function createWindow() {
   let { width, height } = store.get('windowBounds');
@@ -93,7 +92,7 @@ function createWindow() {
   logger.log({
     level: 'info',
     message: 'app started'
-  })
+  });
   startUpdateLoop(store, logger);
 }
 
@@ -111,8 +110,11 @@ app.on('activate', () => {
   }
 });
 
-dialog.showErrorBox = function(title, content) {
-  console.log(`${title}\n${content}`);
+dialog.showErrorBox = function (title, content) {
+  logger.log({
+    level: 'error',
+    message: `${title}\n${content}`
+  });
 }
 
 process.on('SIGINT', () => {

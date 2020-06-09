@@ -43,7 +43,7 @@
 .time-picker {
   margin-bottom: 15px;
 }
-*/
+
 .time {
   text-align: left;
   display: flex;
@@ -58,9 +58,11 @@
 .time-text {
   padding: 3px;
   margin: 15px;
-}
+}*/
 
-.react-time-picker {
+.time-filter {
+  display: flex;
+  flex-direction: column;
   margin: 15px;
 }
 
